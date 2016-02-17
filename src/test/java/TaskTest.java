@@ -61,4 +61,7 @@ public class TaskTest {
     Task.clear();
     assertEquals(Task.all().size(), 0);
   }
+
+  @Rule
+  public ClearRule clearRule = new ClearRule();
 }
