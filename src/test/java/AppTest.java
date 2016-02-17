@@ -1,17 +1,16 @@
-import org.junit.*;
-import java.util.ArrayList;
-import static org.junit.Assert.*;
 import org.fluentlenium.adapter.FluentTest;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.fluentlenium.core.filter.FilterConstructor.*;
 
+import static org.fluentlenium.core.filter.FilterConstructor.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class AppTest extends FluentTest {
   public WebDriver webDriver = new HtmlUnitDriver();
+
+  @Override
   public WebDriver getDefaultDriver() {
       return webDriver;
   }
@@ -21,37 +20,48 @@ public class AppTest extends FluentTest {
 
   @Test
   public void rootTest() {
-      goTo("http://localhost:4567/");
-      assertThat(pageSource()).contains("Add a new task:");
+    goTo("http://localhost:4567/");
+    assertThat(pageSource()).contains("Todo List");
   }
 
   @Test
-  public void taskIsCreated() {
+  public void taskIsCreatedTest() {
     goTo("http://localhost:4567/");
-    fill("#description").with("Do the homework");
+    click("a", withText("Add new task"));
+    fill("#description").with("Mow the lawn");
     submit(".btn");
     assertThat(pageSource()).contains("Your task has been saved.");
   }
 
   @Test
   public void taskIsDisplayedTest() {
-    goTo("http://localhost:4567");
-    fill("#description").with("Do the exercise");
+    goTo("http://localhost:4567/tasks/new");
+    fill("#description").with("Mow the lawn");
     submit(".btn");
-    click("a");
-    assertThat(pageSource()).contains("Do the exercise");
+    click("a", withText("View all tasks"));
+    assertThat(pageSource()).contains("Mow the lawn");
   }
 
   @Test
   public void multipleTasksAreDisplayedTest() {
-    goTo("http://localhost:4567");
-    fill("#description").with("Do the exercise");
+    goTo("http://localhost:4567/tasks/new");
+    fill("#description").with("Mow the lawn");
     submit(".btn");
-    click("a");
+    goTo("http://localhost:4567/tasks/new");
+    fill("#description").with("Buy groceries");
+    submit(".btn");
+    click("a", withText("View all tasks"));
+    assertThat(pageSource()).contains("Mow the lawn");
+    assertThat(pageSource()).contains("Buy groceries");
+  }
+
+  @Test
+  public void taskShowPageDisplaysDescription() {
+    goTo("http://localhost:4567/tasks/new");
     fill("#description").with("Do the dishes");
     submit(".btn");
-    click("a");
-    assertThat(pageSource()).contains("Do the exercise");
+    click("a", withText("View all tasks"));
+    click("a", withText("Do the dishes"));
     assertThat(pageSource()).contains("Do the dishes");
   }
 }
