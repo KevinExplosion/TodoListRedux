@@ -48,3 +48,8 @@ public class Task {
       return null;
     }
   }
+
+  public static void clear() {
+    instances.clear();
+  }
+}
